@@ -21,8 +21,8 @@ load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 ADMIN_ID = os.getenv("ADMIN_ID")
 
-if not BOT_TOKEN or BOT_TOKEN == "9119379055:AAFiksuuDoItIuqgEeKm_0l5m8RfnrHBGXI":
-    raise ValueError("XATOLIK: .env faylida BOT_TOKEN ko'rsatilmagan!")
+if not BOT_TOKEN:
+    raise ValueError("XATOLIK: BOT_TOKEN ko'rsatilmagan!")
 
 logging.basicConfig(level=logging.INFO)
 
@@ -193,6 +193,10 @@ async def phone_received(message: types.Message, state: FSMContext):
         user_name = message.from_user.full_name
         username = f"@{message.from_user.username}" if message.from_user.username else "Mavjud emas"
 
+        car_val = data.get("car") or "Noma'lum"
+        service_val = data.get("service_type") or "Noma'lum"
+        problem_val = data.get("problem_details") or "Tavsif berilmagan"
+
         admin_text = (
             "🔔 *YANGI MUROJAAT / BUYURTMA!* 🔔\n"
             "━━━━━━━━━━━━━━━━━━━━━\n"
@@ -201,9 +205,9 @@ async def phone_received(message: types.Message, state: FSMContext):
             f"🆔 *Telegram ID:* `{message.from_user.id}`\n"
             f"📞 *Telefon:* `{phone}`\n"
             "━━━━━━━━━━━━━━━━━━━━━\n"
-            f"🚗 *Avtomobil:* {data.get('car', 'Noma\'lum')}\n"
-            f"🛠 *Xizmat turi:* {data.get('service_type', 'Noma\'lum')}\n"
-            f"📝 *Muammo tavsifi:*\n{data.get('problem_details', 'Noma\'lum')}\n"
+            f"🚗 *Avtomobil:* {car_val}\n"
+            f"🛠 *Xizmat turi:* {service_val}\n"
+            f"📝 *Muammo tavsifi:*\n{problem_val}\n"
             "━━━━━━━━━━━━━━━━━━━━━\n"
             "📍 *Mijoz lokatsiyasi quyida yuborildi:*"
         )
