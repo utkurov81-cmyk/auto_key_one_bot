@@ -16,6 +16,8 @@ from aiogram.types import (
     InlineKeyboardButton,
 )
 
+from aiohttp import web
+
 load_dotenv()
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
@@ -228,10 +230,29 @@ async def phone_received(message: types.Message, state: FSMContext):
 
     await state.clear()
 
+async def handle_ping(request):
+    return web.Response(text="Bot is running!")
+
+async def start_web_server():
+    port = int(os.environ.get("PORT", 8080))
+    app = web.Application()
+    app.router.add_get("/", handle_ping)
+    app.router.add_get("/health", handle_ping)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "0.0.0.0", port)
+    await site.start()
+    logging.info(f"Health check server running on port {port}")
+
 async def main():
     print("==========================================")
     print("🚀 Python Kalit yasovchi bot ishga tushmoqda...")
     print("==========================================")
+    
+    # Render Web Service portini ochish (deploy muvaffaqiyatli bo'lishi uchun)
+    if "PORT" in os.environ:
+        await start_web_server()
+        
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
